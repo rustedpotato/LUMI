@@ -836,14 +836,31 @@ with tab_reminders:
 
 save_data()
 
-# ---------------- FOOTER ----------------
+# ---------------- PRIVACY NOTICE & DATA HANDLING ----------------
+
+with st.expander("🔒 Privacy Notice & Data Handling", expanded=False):
+    st.markdown('''
+<div style="font-size:0.88rem;color:var(--text-secondary);line-height:1.6;padding:4px 0;">
+    <p style="margin-bottom:8px;"><strong>LUMI Privacy Notice:</strong></p>
+    <ul style="margin-top:0;padding-left:20px;">
+        <li><strong>Local Persistence:</strong> All personal tasks, project categories, and scheduled reminders are stored locally in your SQLite database (<code>planora.db</code>).</li>
+        <li><strong>AI Model Processing:</strong> When clicking <em>Organize with AI</em>, natural language descriptions are sent securely to Anthropic Claude (via OpenRouter) solely to parse tasks and estimate deadlines. No prompt data is retained or used for training.</li>
+        <li><strong>Zero Third-Party Telemetry:</strong> No analytics cookies, trackers, or advertising SDKs are embedded in this application.</li>
+    </ul>
+</div>
+''', unsafe_allow_html=True)
+
+# ---------------- FOOTER & AI DISCLOSURE ----------------
 
 st.markdown("---")
 st.markdown(
     '<div style="text-align:center;color:var(--text-secondary);font-size:.85rem;padding:16px 0;line-height:1.6;">'
     '<div><strong>✦ LUMI</strong> · Intelligent Task Atelier</div>'
-    '<div style="font-size:.78rem;color:var(--text-muted);margin-top:4px;">'
-    'Built with <strong>Streamlit</strong> (Apache 2.0) & <strong>Anthropic Claude</strong> AI via OpenRouter · All Rights Reserved'
+    '<div style="font-size:.80rem;color:var(--text-secondary);margin-top:4px;">'
+    '<strong>App Footer Disclosure:</strong> Powered by <strong>Anthropic Claude</strong> via OpenRouter · UI framework: <strong>Streamlit</strong> (Apache 2.0)'
+    '</div>'
+    '<div style="font-size:.75rem;color:var(--text-muted);margin-top:2px;">'
+    'AI-generated tasks, deadlines, and priorities are advisory suggestions. Always review before scheduling. · MIT License'
     '</div>'
     '</div>',
     unsafe_allow_html=True
