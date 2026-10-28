@@ -1,4 +1,5 @@
 
+import os
 import json
 import re
 import datetime as dt
@@ -24,6 +25,11 @@ st.markdown(
     f"<style>{css_file.read_text(encoding='utf-8')}</style>",
     unsafe_allow_html=True
 )
+
+
+def caption(text):
+    """High-contrast accessible caption conforming to Impeccable WCAG rules."""
+    st.markdown(f'<div class="ui-caption">{text}</div>', unsafe_allow_html=True)
 
 
 # ---------------- PERMANENT STORAGE ----------------
@@ -147,7 +153,18 @@ MODEL = "openrouter/free"
 
 
 def organize_tasks(description):
-    api_key = st.secrets["OPENROUTER_API_KEY"]
+    api_key = os.environ.get("OPENROUTER_API_KEY")
+    if not api_key:
+        try:
+            if "OPENROUTER_API_KEY" in st.secrets:
+                api_key = st.secrets["OPENROUTER_API_KEY"]
+        except Exception:
+            pass
+    if not api_key:
+        raise RuntimeError(
+            "OPENROUTER_API_KEY is not configured. Please add it to "
+            ".streamlit/secrets.toml or set OPENROUTER_API_KEY in your environment variables."
+        )
     today = dt.date.today().isoformat()
 
     prompt = f"""
@@ -251,18 +268,18 @@ User description:
 # ---------------- HEADER ----------------
 
 st.markdown(
-    '<div class="brand"><span>✦</span> LUMI '
-    '<span style="background:transparent;color:#aaa8ca;'
-    'font-size:.8rem;font-weight:500">AI PRODUCTIVITY SPACE</span></div>',
+    '<div class="brand">'
+    '<div class="brand-badge">✦</div>'
+    '<span>LUMI</span>'
+    '<span class="brand-tag">AI Productivity Atelier</span>'
+    '</div>',
     unsafe_allow_html=True
 )
 
 st.markdown("""
 <div class="hero">
-    <small>YOUR DAY, YOUR WAY</small>
     <h1>Make room for what matters.</h1>
-    <p>Plan your projects, organize your tasks, and keep your next
-    deadline in sight — with a little help from AI.</p>
+    <p>Plan your projects, structure your day, and keep every deadline in clear focus — with intelligent assistance from AI.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -283,10 +300,10 @@ upcoming_count = sum(
 )
 
 c1, c2, c3, c4 = st.columns(4)
-c1.metric("✦ Total tasks", total)
-c2.metric("◷ To do", pending_count)
-c3.metric("✓ Completed", completed_count)
-c4.metric("▦ Upcoming", upcoming_count)
+c1.metric("Total Tasks", total)
+c2.metric("To Do", pending_count)
+c3.metric("Completed", completed_count)
+c4.metric("Upcoming", upcoming_count)
 
 if total:
     st.progress(
@@ -295,7 +312,7 @@ if total:
     )
 
 st.markdown(
-    '<div class="muted">Navigate using the tabs below </div>',
+    '<div class="muted">Navigate your workspace using the tabs below</div>',
     unsafe_allow_html=True
 )
 
@@ -303,18 +320,18 @@ st.markdown(
 # ---------------- NAVIGATION ----------------
 
 tab_home, tab_calendar, tab_projects, tab_board, tab_reminders = st.tabs([
-    "⌂  Dashboard",
-    "▦  Calendar",
-    "▧  Projects",
-    "☷  Task board",
-    "◷  Reminders"
+    "Dashboard",
+    "Calendar",
+    "Projects",
+    "Task Board",
+    "Reminders"
 ])
 
 
 # ---------------- DASHBOARD TAB ----------------
 
 with tab_home:
-    st.markdown('<div class="section-title">✧ AI task planner</div>',
+    st.markdown('<div class="section-title">AI Task Planner</div>',
                 unsafe_allow_html=True)
     st.markdown(
         '<div class="muted">Describe what is on your mind. '
@@ -322,36 +339,35 @@ with tab_home:
         unsafe_allow_html=True
     )
 
-    with st.container(border=True):
-        with st.form("ai_planner_form"):
-            description = st.text_area(
-                "Describe your tasks",
-                placeholder=(
-                    "I have an assignment due tomorrow, "
-                    "a test on Friday, and a room to clean..."
-                ),
-                height=110
-            )
-            ai_submit = st.form_submit_button(
-                "✦ Organize with AI",
-                type="primary",
-                use_container_width=True
-            )
+    with st.form("ai_planner_form"):
+        description = st.text_area(
+            "Describe your tasks",
+            placeholder=(
+                "I have an assignment due tomorrow, "
+                "a test on Friday, and a room to clean..."
+            ),
+            height=110
+        )
+        ai_submit = st.form_submit_button(
+            "Organize with AI",
+            type="primary",
+            use_container_width=True
+        )
 
-        if ai_submit:
-            if not description.strip():
-                st.warning("Describe your tasks first.")
-            else:
-                try:
-                    with st.spinner("AI is planning your tasks..."):
-                        st.session_state.ai_tasks = organize_tasks(description)
-                    st.rerun()
-                except Exception as e:
-                    st.error("The AI request failed.")
-                    st.caption(str(e))
+    if ai_submit:
+        if not description.strip():
+            st.warning("Describe your tasks first.")
+        else:
+            try:
+                with st.spinner("AI is planning your tasks..."):
+                    st.session_state.ai_tasks = organize_tasks(description)
+                st.rerun()
+            except Exception as e:
+                st.error("The AI request failed.")
+                caption(str(e))
 
     if st.session_state.ai_tasks:
-        st.markdown('<div class="section-title">Your AI plan</div>',
+        st.markdown('<div class="section-title">Your AI Plan</div>',
                     unsafe_allow_html=True)
 
         for n, item in enumerate(st.session_state.ai_tasks, start=1):
@@ -367,7 +383,7 @@ with tab_home:
                     unsafe_allow_html=True
                 )
 
-        if st.button("＋ Add AI tasks to my list",
+        if st.button("Add Tasks to Workspace",
                      type="primary", use_container_width=True):
             existing = {
                 t["task"].casefold() for t in st.session_state.tasks
@@ -384,46 +400,45 @@ with tab_home:
             st.toast(f"Added {added} task(s)!")
             st.rerun()
 
-    st.markdown('<div class="section-title">＋ Quick add</div>',
+    st.markdown('<div class="section-title">Quick Add Task</div>',
                 unsafe_allow_html=True)
 
     project_options = st.session_state.projects or ["General"]
 
-    with st.container(border=True):
-        with st.form("manual_task_form", clear_on_submit=True):
-            new_task = st.text_input(
-                "Task name",
-                placeholder="e.g. Finish my assignment"
+    with st.form("manual_task_form", clear_on_submit=True):
+        new_task = st.text_input(
+            "Task name",
+            placeholder="e.g. Finish quarterly project proposal"
+        )
+
+        col1, col2 = st.columns(2)
+        with col1:
+            new_priority = st.selectbox(
+                "Priority", ["High", "Medium", "Low"]
+            )
+            new_project = st.selectbox(
+                "Project", project_options
+            )
+        with col2:
+            new_due = st.date_input(
+                "Deadline (optional)",
+                value=None
+            )
+            new_reminder_date = st.date_input(
+                "Reminder date (optional)",
+                value=None
             )
 
-            col1, col2 = st.columns(2)
-            with col1:
-                new_priority = st.selectbox(
-                    "Priority", ["High", "Medium", "Low"]
-                )
-                new_project = st.selectbox(
-                    "Project", project_options
-                )
-            with col2:
-                new_due = st.date_input(
-                    "Deadline (optional)",
-                    value=None
-                )
-                new_reminder_date = st.date_input(
-                    "Reminder date (optional)",
-                    value=None
-                )
+        new_reminder_time = st.time_input(
+            "Reminder time",
+            value=dt.time(9, 0)
+        )
 
-            new_reminder_time = st.time_input(
-                "Reminder time",
-                value=dt.time(9, 0)
-            )
-
-            manual_submit = st.form_submit_button(
-                "＋ Add task",
-                type="primary",
-                use_container_width=True
-            )
+        manual_submit = st.form_submit_button(
+            "Add Task",
+            type="primary",
+            use_container_width=True
+        )
 
         if manual_submit:
             if not new_task.strip():
@@ -448,7 +463,7 @@ with tab_home:
                 st.rerun()
 
     st.markdown(
-        '<div class="section-title">☷ Your task list</div>',
+        '<div class="section-title">Your Task List</div>',
         unsafe_allow_html=True
     )
 
@@ -481,19 +496,20 @@ with tab_home:
                         f'</span>',
                         unsafe_allow_html=True
                     )
-                    st.caption(
+                    caption(
                         f"Deadline: {item.get('deadline', 'Not specified')}"
                     )
 
                 with col_check:
                     st.checkbox(
-    "Done",
-    value=item.get("completed", False),
-    key=f"dashboard_done_{i}",
-    on_change=update_dashboard_task,
-    args=(i,)
-)
-    st.markdown('<div class="section-title">Your day at a glance</div>',
+                        "Done",
+                        value=item.get("completed", False),
+                        key=f"dashboard_done_{i}",
+                        on_change=update_dashboard_task,
+                        args=(i,)
+                    )
+
+    st.markdown('<div class="section-title">Today at a Glance</div>',
                 unsafe_allow_html=True)
 
     todays_tasks = [
@@ -511,10 +527,10 @@ with tab_home:
 # ---------------- CALENDAR TAB ----------------
 
 with tab_calendar:
-    st.markdown('<div class="section-title">▦ Calendar</div>',
+    st.markdown('<div class="section-title">Calendar Schedule</div>',
                 unsafe_allow_html=True)
     st.markdown(
-        '<div class="muted">Choose a date to see the tasks scheduled for it.</div>',
+        '<div class="muted">Choose a date to review and manage scheduled deliverables.</div>',
         unsafe_allow_html=True
     )
 
@@ -533,7 +549,7 @@ with tab_calendar:
         for item in dated_tasks:
             with st.container(border=True):
                 st.markdown(f"**{item['task']}**")
-                st.caption(
+                caption(
                     f"{item['priority']} priority · "
                     f"{item.get('project', 'General')} · "
                     f"{'Completed' if item['completed'] else 'To do'}"
@@ -541,7 +557,7 @@ with tab_calendar:
     else:
         st.info("No tasks with an editable calendar date on this day.")
 
-    st.caption(
+    caption(
         "Tasks with only a text deadline, such as 'sometime next week', "
         "appear here once you assign them a calendar date in the task board."
     )
@@ -550,7 +566,7 @@ with tab_calendar:
 # ---------------- PROJECTS TAB ----------------
 
 with tab_projects:
-    st.markdown('<div class="section-title">▧ Projects</div>',
+    st.markdown('<div class="section-title">Project Spaces</div>',
                 unsafe_allow_html=True)
     st.markdown(
         '<div class="muted">Group tasks by assignment, subject, '
@@ -558,30 +574,29 @@ with tab_projects:
         unsafe_allow_html=True
     )
 
-    with st.container(border=True):
-        with st.form("project_form", clear_on_submit=True):
-            project_name = st.text_input(
-                "New project name",
-                placeholder="e.g. College, Personal, AI Mini Project"
-            )
-            project_submit = st.form_submit_button(
-                "＋ Create project",
-                type="primary",
-                use_container_width=True
-            )
+    with st.form("project_form", clear_on_submit=True):
+        project_name = st.text_input(
+            "New project name",
+            placeholder="e.g. College, Personal, AI Mini Project"
+        )
+        project_submit = st.form_submit_button(
+            "Create Project",
+            type="primary",
+            use_container_width=True
+        )
 
-        if project_submit:
-            clean_name = project_name.strip()
-            if clean_name and clean_name not in st.session_state.projects:
-                st.session_state.projects.append(clean_name)
-                st.success(f"Created project: {clean_name}")
-                st.rerun()
-            elif clean_name:
-                st.warning("That project already exists.")
-            else:
-                st.warning("Enter a project name.")
+    if project_submit:
+        clean_name = project_name.strip()
+        if clean_name and clean_name not in st.session_state.projects:
+            st.session_state.projects.append(clean_name)
+            st.success(f"Created project: {clean_name}")
+            st.rerun()
+        elif clean_name:
+            st.warning("That project already exists.")
+        else:
+            st.warning("Enter a project name.")
 
-    st.markdown('<div class="section-title">Your projects</div>',
+    st.markdown('<div class="section-title">Your Projects</div>',
                 unsafe_allow_html=True)
 
     for project in st.session_state.projects:
@@ -592,8 +607,8 @@ with tab_projects:
         project_done = sum(t["completed"] for t in project_tasks)
 
         with st.container(border=True):
-            st.markdown(f"**▧ {project}**")
-            st.caption(
+            st.markdown(f"**{project}**")
+            caption(
                 f"{len(project_tasks)} tasks · {project_done} completed"
             )
             if project_tasks:
@@ -609,7 +624,7 @@ with tab_projects:
 # ---------------- TASK BOARD TAB ----------------
 
 with tab_board:
-    st.markdown('<div class="section-title">☷ Task board</div>',
+    st.markdown('<div class="section-title">Task Board</div>',
                 unsafe_allow_html=True)
     st.markdown(
         '<div class="muted">Update task details, change deadlines, '
@@ -643,10 +658,10 @@ with tab_board:
     todo_col, done_col = st.columns(2)
 
     with todo_col:
-        st.markdown("### ◷ To do")
+        st.markdown("## To Do")
 
     with done_col:
-        st.markdown("### ✓ Completed")
+        st.markdown("## Completed")
 
     todo_tasks = [(i, t) for i, t in visible_tasks if not t["completed"]]
     done_tasks = [(i, t) for i, t in visible_tasks if t["completed"]]
@@ -665,7 +680,7 @@ with tab_board:
                     f'{item["priority"]} priority</span>',
                     unsafe_allow_html=True
                 )
-                st.caption(f"Project: {item.get('project', 'General')}")
+                caption(f"Project: {item.get('project', 'General')}")
 
                 edited_date = st.date_input(
                     "Edit deadline",
@@ -704,7 +719,7 @@ with tab_board:
                 )
                 st.session_state.tasks[i]["reminder_time"] = reminder_time
 
-                if st.button("✓ Mark complete", key=f"complete_{i}",
+                if st.button("Mark Complete", key=f"complete_{i}",
                              type="primary", use_container_width=True):
                     st.session_state.tasks[i]["completed"] = True
                     st.rerun()
@@ -714,13 +729,13 @@ with tab_board:
             st.info("Completed tasks will appear here.")
         for i, item in done_tasks:
             with st.container(border=True):
-                st.markdown(f"**✓ {item['task']}**")
-                st.caption(
+                st.markdown(f"**{item['task']}**")
+                caption(
                     f"{item['priority']} priority · "
                     f"{item.get('project', 'General')}"
                 )
                 if st.button(
-                    "↶ Reopen task",
+                    "Reopen Task",
                     key=f"reopen_{i}",
                     use_container_width=True
                 ):
@@ -747,11 +762,11 @@ with tab_board:
 # ---------------- REMINDERS TAB ----------------
 
 with tab_reminders:
-    st.markdown('<div class="section-title">◷ Reminders</div>',
+    st.markdown('<div class="section-title">Upcoming Reminders</div>',
                 unsafe_allow_html=True)
     st.markdown(
-        '<div class="muted">Review upcoming reminders and the dates '
-        'you set for your tasks.</div>',
+        '<div class="muted">Review upcoming reminders and scheduled dates '
+        'for your tasks.</div>',
         unsafe_allow_html=True
     )
 
@@ -783,7 +798,7 @@ with tab_reminders:
             reminder_time = item.get("reminder_time") or dt.time(9, 0)
 
             with st.container(border=True):
-                st.markdown(f"**◷ {item['task']}**")
+                st.markdown(f"**{item['task']}**")
 
                 if reminder_date:
                     st.write(
@@ -792,20 +807,20 @@ with tab_reminders:
                     )
 
                 if due_date:
-                    st.caption(
+                    caption(
                         f"Deadline: {due_date.strftime('%d %b %Y')}"
                     )
 
                 if item["completed"]:
-                    st.caption("✓ Completed")
+                    caption("Completed")
                 elif reminder_date and reminder_date < today:
                     st.warning("Reminder date has passed.")
                 elif due_date and due_date < today:
                     st.warning("Deadline has passed.")
                 else:
-                    st.caption("Upcoming")
+                    caption("Upcoming")
 
-    st.caption(
+    caption(
         "These are in-app reminders, not push notifications. "
         "Lumi must be open to view them."
     )
@@ -818,7 +833,7 @@ save_data()
 
 st.markdown("---")
 st.markdown(
-    '<div style="text-align:center;color:#85849f;font-size:.8rem">'
-    'LUMI · Built with Python, Streamlit & OpenRouter AI</div>',
+    '<div style="text-align:center;color:var(--text-secondary);font-size:.85rem;padding:16px 0;">'
+    'LUMI · Intelligent Task Atelier · Built with Python & Streamlit</div>',
     unsafe_allow_html=True
 )

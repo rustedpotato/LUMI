@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-27T19:24:00Z",
+  "title": "Design System: LUMI",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Royal Iris", "canonical": "#5B3EE8", "tonalRamp": ["#1C0E6B", "#2A188C", "#3E27B8", "#5B3EE8", "#7861EE", "#9B8AF4", "#C6BDF9", "#F0EDFD"] },
+      "canvas": { "role": "neutral", "displayName": "Canvas Pearl", "canonical": "#F8F9FC", "tonalRamp": ["#0E0C17", "#1E1A2D", "#3B3752", "#5E5B73", "#8A879E", "#C7C4D9", "#EAE7F2", "#F8F9FC"] },
+      "surface": { "role": "neutral", "displayName": "Surface Pure", "canonical": "#FFFFFF", "tonalRamp": ["#111116", "#21212B", "#424254", "#65657E", "#9A9AB3", "#CCCCDF", "#EEEEF7", "#FFFFFF"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero headline and brand mark." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles and tab headings." },
+      "body": { "displayName": "Body", "purpose": "Task content and descriptions." }
+    },
+    "shadows": [
+      { "name": "card-rest", "value": "0 1px 3px rgba(27, 20, 54, 0.03), 0 4px 12px rgba(27, 20, 54, 0.025)", "purpose": "Soft ambient depth on cards." },
+      { "name": "button-rest", "value": "0 1px 2px rgba(16, 24, 40, 0.05), 0 2px 4px rgba(91, 62, 232, 0.15)", "purpose": "Tactile elevation for primary buttons." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Smooth transition for interactive states." }
+    ],
+    "breakpoints": [
+      { "name": "mobile", "value": "640px" },
+      { "name": "tablet", "value": "900px" },
+      { "name": "desktop", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main action trigger for organizing and saving tasks.",
+      "html": "<button class=\"ds-btn-primary\">Organize with AI</button>",
+      "css": ".ds-btn-primary { background: #5B3EE8; color: #FFFFFF; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 15px; padding: 10px 20px; min-height: 44px; border: 1px solid #4A2FD0; border-radius: 10px; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 2px 4px rgba(91, 62, 232, 0.15); } .ds-btn-primary:hover { background: #4A2FD0; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(91, 62, 232, 0.25); }"
+    },
+    {
+      "name": "Priority Pill",
+      "kind": "chip",
+      "refersTo": "chip-priority",
+      "description": "Visual indicator for task priority.",
+      "html": "<span class=\"ds-pill ds-pill-high\">High priority</span>",
+      "css": ".ds-pill { display: inline-block; border-radius: 9999px; padding: 3px 10px; font-size: 0.75rem; font-weight: 700; font-family: 'DM Sans', sans-serif; } .ds-pill-high { background: #FDF2F4; color: #A11D33; border: 1px solid #F9D5DC; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Daylight Atelier",
+    "overview": "A serene, high-contrast digital planner designed to eliminate cognitive clutter through disciplined typographic hierarchy, crisp porcelain surfaces, and purposeful iris accents.",
+    "keyCharacteristics": [
+      "Pristine Contrast: High-contrast violet-slate typography on soft pearl canvas.",
+      "Purposeful Iris Accent: Reserved strictly for primary interactions and progress indicators.",
+      "Refined Tactility: Subtle borders and soft-focus ambient elevation without heavy drop shadows.",
+      "Zero Eyebrow Policy: Bold, self-sufficient headlines with natural authority."
+    ],
+    "rules": [
+      { "name": "The Iris Focus Rule", "body": "The royal iris accent is reserved strictly for interactive primary actions and active state focus.", "section": "colors" },
+      { "name": "The No-Mud Rule", "body": "Secondary text is tinted with cool slate-violet, never a washed-out mid-gray on colored surfaces.", "section": "colors" }
+    ],
+    "dos": [
+      "Do keep text contrast above 4.5:1 on all surfaces.",
+      "Do use pure white text (#FFFFFF) on primary iris action buttons.",
+      "Do provide smooth micro-transitions on interactive hover states."
+    ],
+    "donts": [
+      "Don't use kicker/eyebrow labels above headings.",
+      "Don't force pure black text (#000000) onto pastel buttons.",
+      "Don't use right-aligned tabs that disconnect navigation from content."
+    ]
+  }
+}
