@@ -339,6 +339,13 @@ with tab_home:
         unsafe_allow_html=True
     )
 
+    st.markdown(
+        '<div class="ai-disclosure-banner">'
+        '<span>✦ <strong>AI Disclosure:</strong> Tasks, priorities, and deadlines are generated using Artificial Intelligence (Anthropic Claude via OpenRouter). Always review AI-suggested schedules before finalizing.</span>'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
     with st.form("ai_planner_form"):
         description = st.text_area(
             "Describe your tasks",
@@ -833,7 +840,11 @@ save_data()
 
 st.markdown("---")
 st.markdown(
-    '<div style="text-align:center;color:var(--text-secondary);font-size:.85rem;padding:16px 0;">'
-    'LUMI · Intelligent Task Atelier · Built with Python & Streamlit</div>',
+    '<div style="text-align:center;color:var(--text-secondary);font-size:.85rem;padding:16px 0;line-height:1.6;">'
+    '<div><strong>✦ LUMI</strong> · Intelligent Task Atelier</div>'
+    '<div style="font-size:.78rem;color:var(--text-muted);margin-top:4px;">'
+    'Built with <strong>Streamlit</strong> (Apache 2.0) & <strong>Anthropic Claude</strong> AI via OpenRouter · All Rights Reserved'
+    '</div>'
+    '</div>',
     unsafe_allow_html=True
 )

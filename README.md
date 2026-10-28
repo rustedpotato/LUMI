@@ -93,5 +93,13 @@ LUMI integrates [pbakaus/impeccable](https://github.com/pbakaus/impeccable) to m
 
 ---
 
+## ⚖️ Attribution & AI Disclosure
+
+- **Streamlit**: Application user interface and interactive web framework. Licensed under the [Apache License 2.0](https://github.com/streamlit/streamlit/blob/develop/LICENSE).
+- **Anthropic Claude**: Natural language understanding, task parsing, and priority intelligence. Governed by the [Anthropic Commercial Terms of Service](https://www.anthropic.com/legal/commercial-terms).
+- **🤖 AI Disclosure**: LUMI leverages large language models (LLMs) to decompose unstructured user thought logs into discrete tasks, estimate urgency/priority, and infer calendar deadlines. All AI-generated tasks and deadlines are suggestions and should be verified by the user.
+
+---
+
 ## 📄 License
 This project is licensed under the MIT License.
